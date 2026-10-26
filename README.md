@@ -8,6 +8,9 @@ printed pages 57–83.
 The chapter is the primary algorithm specification. See the source mapping and
 explicit reproduction notes below.
 
+A student progress report covering completed work, results, limitations, and next
+steps is available in [PROGRESS_REPORT.md](PROGRESS_REPORT.md).
+
 ## Public HCV comparison
 
 The public-data benchmark uses 338 reconstructed HCV HVR1 haplotypes from eight
