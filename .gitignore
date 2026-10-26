@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+
+# Local copyrighted reference extraction; not part of published source
+spec/chapter.txt

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "viral-pooling"
+version = "0.1.0"
+description = "Chapter-based viral sample pool design and deconvolution"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+viral-pooling = "viral_pooling.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["viral_pooling*"]

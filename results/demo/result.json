@@ -1,0 +1,109 @@
+{
+  "synthetic": true,
+  "seed": 91,
+  "samples": 8,
+  "pools": 4,
+  "pool_memberships": [
+    [
+      0,
+      2,
+      4,
+      6
+    ],
+    [
+      0,
+      1,
+      4,
+      5
+    ],
+    [
+      0,
+      1,
+      2,
+      3
+    ],
+    [
+      7
+    ]
+  ],
+  "signatures": [
+    [
+      0,
+      1,
+      2
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      2
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      1
+    ],
+    [
+      0
+    ],
+    [
+      3
+    ]
+  ],
+  "pool_to_sample_ratio": 0.5,
+  "observations": 1040,
+  "assigned_observations": 1040,
+  "assignment_entries": 1040,
+  "correct_assignments": 1040,
+  "accuracy": 1.0,
+  "recall": 1.0,
+  "ambiguous_observations": 0,
+  "deconvolution": {
+    "w": 2,
+    "empty_samples": [],
+    "operations": 4
+  },
+  "design_trace": [
+    {
+      "steps": 4,
+      "fallback": false,
+      "bounded": false,
+      "tenure": 1,
+      "separated": 16,
+      "remaining": 12
+    },
+    {
+      "steps": 4,
+      "fallback": false,
+      "bounded": false,
+      "tenure": 1,
+      "separated": 8,
+      "remaining": 4
+    },
+    {
+      "steps": 4,
+      "fallback": false,
+      "bounded": false,
+      "tenure": 1,
+      "separated": 4,
+      "remaining": 0
+    }
+  ],
+  "recovered_counts": {
+    "7": 80,
+    "0": 240,
+    "4": 160,
+    "2": 160,
+    "6": 80,
+    "1": 160,
+    "5": 80,
+    "3": 80
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "seed": 37,
+  "synthetic": true,
+  "samples": [
+    {
+      "id": 0,
+      "titer": 10,
+      "haplotypes": [
+        "s0_h0",
+        "s0_h1",
+        "s0_h2",
+        "s0_h3"
+      ],
+      "frequencies": [
+        0.65,
+        0.2,
+        0.1,
+        0.05
+      ]
+    },
+    {
+      "id": 1,
+      "titer": 11,
+      "haplotypes": [
+        "s1_h0",
+        "s1_h1",
+        "s1_h2",
+        "s1_h3"
+      ],
+      "frequencies": [
+        0.65,
+        0.2,
+        0.1,
+        0.05
+      ]
+    },
+    {
+      "id": 2,
+      "titer": 12,
+      "haplotypes": [
+        "s2_h0",
+        "s2_h1",
+        "s2_h2",
+        "s2_h3"
+      ],
+      "frequencies": [
+        0.65,
+        0.2,
+        0.1,
+        0.05
+      ]
+    },
+    {
+      "id": 3,
+      "titer": 10,
+      "haplotypes": [
+        "s3_h0",
+        "s3_h1",
+        "s3_h2",
+        "s3_h3"
+      ],
+      "frequencies": [
+        0.65,
+        0.2,
+        0.1,
+        0.05
+      ]
+    },
+    {
+      "id": 4,
+      "titer": 11,
+      "haplotypes": [
+        "s4_h0",
+        "s4_h1",
+        "s4_h2",
+        "s4_h3"
+      ],
+      "frequencies": [
+        0.65,
+        0.2,
+        0.1,
+        0.05
+      ]
+    },
+    {
+      "id": 5,
+      "titer": 12,
+      "haplotypes": [
+        "s5_h0",
+        "s5_h1",
+        "s5_h2",
+        "s5_h3"
+      ],
+      "frequencies": [
+        0.65,
+        0.2,
+        0.1,
+        0.05
+      ]
+    },
+    {
+      "id": 6,
+      "titer": 10,
+      "haplotypes": [
+        "s6_h0",
+        "s6_h1",
+        "s6_h2",
+        "s6_h3"
+      ],
+      "frequencies": [
+        0.65,
+        0.2,
+        0.1,
+        0.05
+      ]
+    },
+    {
+      "id": 7,
+      "titer": 11,
+      "haplotypes": [
+        "s7_h0",
+        "s7_h1",
+        "s7_h2",
+        "s7_h3"
+      ],
+      "frequencies": [
+        0.65,
+        0.2,
+        0.1,
+        0.05
+      ]
+    }
+  ]
+}

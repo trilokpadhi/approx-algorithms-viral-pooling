@@ -1,0 +1,97 @@
+{
+  "synthetic": true,
+  "seed": 91,
+  "samples": 8,
+  "pools": 4,
+  "pool_memberships": [
+    [
+      0,
+      1,
+      2,
+      3
+    ],
+    [
+      0,
+      1,
+      4,
+      5
+    ],
+    [
+      0,
+      2,
+      4,
+      6
+    ],
+    [
+      7
+    ]
+  ],
+  "signatures": [
+    [
+      0,
+      1,
+      2
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      0
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      1
+    ],
+    [
+      2
+    ],
+    [
+      3
+    ]
+  ],
+  "pool_to_sample_ratio": 0.5,
+  "observations": 1040,
+  "assigned_observations": 1040,
+  "assignment_entries": 1040,
+  "correct_assignments": 1040,
+  "accuracy": 1.0,
+  "recall": 1.0,
+  "ambiguous_observations": 0,
+  "deconvolution": {
+    "w": 2,
+    "empty_samples": [],
+    "operations": 4
+  },
+  "design_trace": [
+    {
+      "separated": 16,
+      "remaining": 12
+    },
+    {
+      "separated": 8,
+      "remaining": 4
+    },
+    {
+      "separated": 4,
+      "remaining": 0
+    }
+  ],
+  "recovered_counts": {
+    "7": 80,
+    "0": 240,
+    "1": 160,
+    "2": 160,
+    "3": 80,
+    "4": 160,
+    "5": 80,
+    "6": 80
+  }
+}

@@ -1,0 +1,24 @@
+Command: python3 -m unittest discover -s tests -v
+3.13.3 (main, Apr  8 2025, 13:54:08) [Clang 16.0.0 (clang-1600.0.26.6)]
+
+test_end_to_end_both_solvers (test_demo.DemoTests.test_end_to_end_both_solvers) ... ok
+test_boundary (test_design.DesignTests.test_boundary) ... ok
+test_equations_exhaustive (test_design.DesignTests.test_equations_exhaustive) ... ok
+test_oracle_known_cut (test_design.DesignTests.test_oracle_known_cut) ... ok
+test_search_bound_fallback (test_design.DesignTests.test_search_bound_fallback) ... ok
+test_small_graphs_all_feasible (test_design.DesignTests.test_small_graphs_all_feasible) ... ok
+test_tabu_vs_oracle_random (test_design.DesignTests.test_tabu_vs_oracle_random) ... ok
+test_titer_and_epidemiology (test_design.DesignTests.test_titer_and_epidemiology) ... ok
+test_chapter_example_one (test_sequence.SequenceTests.test_chapter_example_one) ... ok
+test_empty_retry_and_unseparated (test_sequence.SequenceTests.test_empty_retry_and_unseparated) ... ok
+test_fasta (test_sequence.SequenceTests.test_fasta) ... ok
+test_k_cap_and_input_validation (test_sequence.SequenceTests.test_k_cap_and_input_validation) ... ok
+test_kgem_known_mixture (test_sequence.SequenceTests.test_kgem_known_mixture) ... ok
+test_sampling_variants_generalized_intersection (test_sequence.SequenceTests.test_sampling_variants_generalized_intersection) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.391s
+
+OK
+
+Exit code: 0
