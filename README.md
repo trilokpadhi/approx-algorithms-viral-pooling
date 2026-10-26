@@ -8,6 +8,39 @@ printed pages 57–83.
 The chapter is the primary algorithm specification. See the source mapping and
 explicit reproduction notes below.
 
+## Public HCV comparison
+
+The public-data benchmark uses 338 reconstructed HCV HVR1 haplotypes from eight
+specimens in [Janiak et al. (2019)](https://doi.org/10.1038/s41598-019-49258-y),
+available in the [CC BY 4.0 Zenodo deposit](https://doi.org/10.5281/zenodo.3266795).
+Real source sequences are used to simulate pooled reads; these are not laboratory-pooled data.
+
+Under the same eight-sample, T=4, depth=80 protocol over five sampling seeds:
+
+| Dataset | Pools | Mean assignment accuracy | Range |
+|---|---:|---:|---:|
+| Synthetic demo | 4 | 100.00% | 100.00–100.00% |
+| Public HCV subset | 4 | 71.81% | 70.48–72.88% |
+
+Every read received one assignment; the gap reflects misassignment. Recall
+excluding the trivially recovered singleton specimen was 69.46% on public data.
+The comparison assumes all samples are compatible because measured titers and
+epidemiological exclusions are unavailable. Source frequencies, sequence length,
+and diversity differ, so this is an exploratory benchmark, not a causal comparison
+or a reproduction of the chapter's reported experimental accuracy.
+
+Read the [full report](results/comparison/README.md) for per-specimen results,
+fixed-W sensitivity, convergence diagnostics, and limitations. The
+[data provenance](data/public_hcv/README.md) includes source URLs, checksums,
+license attribution, and alignment regeneration instructions.
+
+```sh
+python3 -m viral_pooling.benchmark
+```
+
+The committed public alignment makes this command runnable offline. MAFFT is
+needed only to regenerate the alignment; network access only to re-download data.
+
 ## Run
 
 Requires Python 3.10 or later; no runtime packages or network access required.
@@ -98,9 +131,9 @@ the published experiments**.
    distinct observed genotypes. Likelihood calculations use log-sum-exp to avoid
    underflow, preserving Eq.3.10 mathematically.
 6. **Input and lab boundaries.** Reads must already be aligned, equal length, and
-   use A/C/T/G/`-` (the last represents the chapter's deletion allele d). There is
-   no alignment, barcode decoding, error correction, PCR, assembly, or wet-lab
-   sequencing. FASTA pooling simulates independently sampled mixtures. API methods
+   use A/C/T/G/`-` (the last represents the chapter's deletion allele d). Optional
+   public-data preparation runs MAFFT before the core pipeline. Barcode decoding,
+   error correction, PCR, assembly, and wet-lab sequencing are not implemented. FASTA pooling simulates independently sampled mixtures. API methods
    accept arbitrary aligned reads and explicit memberships; the CLI is a demo,
    not a full real-data pipeline. Known epidemiological exclusions must be given
    externally. GI retries from W=2 to 4 if any sample is empty and reports failures;
@@ -108,11 +141,13 @@ the published experiments**.
    can also fragment a shared sample: for the four-read toy example below, W=2
    seeds each distinct string separately and GI is empty; W=1 groups the close
    shared variants correctly. The retry strategy is therefore not a recovery guarantee.
-7. **Data and experiments.** The bundled data is clearly labeled synthetic, with
+7. **Data and experiments.** The original demo data is clearly labeled synthetic, with
    artificial HVR1-length DNA and deliberately separated host populations. It is
    not the chapter's HCV cohort and does not reproduce its empirical claims,
    simulation breadth, real read error model, or reported classification accuracy.
    See `data/README.md` for the exact generator and missing biological effects.
+   The added public HCV benchmark uses real haplotypes but simulated mixtures;
+   its separate report documents limitations and substantially lower accuracy.
 
 ## Actual verification
 
@@ -121,7 +156,7 @@ samples, pool/sample ratio 0.5, and 1,040 reads. It recovered 1,040/1,040 correc
 with no ambiguous or unassigned reads, W=2, and no empty samples. These numbers
 measure this easy seeded synthetic demonstration only.
 
-Actual result: **14 tests passed** (exit code 0). Full output and Python version
+Actual result: **19 tests passed** (exit code 0). Full output and Python version
 are saved in `results/verification.txt`.
 
 The test suite checks:
@@ -136,6 +171,8 @@ The test suite checks:
 - Known sequence mixtures and expected weights, long-read numerical stability,
   generalized intersection of nonidentical sampled variants, chapter Example 1,
   malformed FASTA, too-large k, empty-sample retries, and nonseparating designs.
+- Public source checksums, frequency parsing, sequence preservation through alignment,
+  metric accounting under deliberately wrong assignments, and real-data pipeline conservation.
 - Full deterministic data generation, pooling, deconvolution, and expected perfect
   recovery with both solvers. This is a regression on one synthetic dataset,
   not a general accuracy guarantee.
@@ -145,6 +182,8 @@ The test suite checks:
 - `viral_pooling/design.py`: graph construction, objectives, solvers, validation.
 - `viral_pooling/sequence.py`: FASTA, kGEM, GI, PD.
 - `viral_pooling/__main__.py`: synthetic generator and runnable experiment.
+- `viral_pooling/public_data.py`: source retrieval, checksum checks, frequency parsing, MAFFT preparation.
+- `viral_pooling/benchmark.py`: controlled comparison, diagnostics, and report generation.
 - `tests/`: standard-library unittest suite.
 
 For custom data, construct `Pool(frozenset(sample_ids), {observation_id: sequence})`

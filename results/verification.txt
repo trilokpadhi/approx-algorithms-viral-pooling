@@ -1,5 +1,5 @@
 Command: python3 -m unittest discover -s tests -v
-3.13.3 (main, Apr  8 2025, 13:54:08) [Clang 16.0.0 (clang-1600.0.26.6)]
+Python 3.13.3
 
 test_end_to_end_both_solvers (test_demo.DemoTests.test_end_to_end_both_solvers) ... ok
 test_boundary (test_design.DesignTests.test_boundary) ... ok
@@ -9,6 +9,11 @@ test_search_bound_fallback (test_design.DesignTests.test_search_bound_fallback) 
 test_small_graphs_all_feasible (test_design.DesignTests.test_small_graphs_all_feasible) ... ok
 test_tabu_vs_oracle_random (test_design.DesignTests.test_tabu_vs_oracle_random) ... ok
 test_titer_and_epidemiology (test_design.DesignTests.test_titer_and_epidemiology) ... ok
+test_malformed_frequency_metadata (test_public_benchmark.PublicDataTests.test_malformed_frequency_metadata) ... ok
+test_membership_and_frequency_metadata (test_public_benchmark.PublicDataTests.test_membership_and_frequency_metadata) ... ok
+test_metrics_detect_wrong_and_unassigned_reads (test_public_benchmark.PublicDataTests.test_metrics_detect_wrong_and_unassigned_reads) ... ok
+test_public_end_to_end_conservation_and_diagnostics (test_public_benchmark.PublicDataTests.test_public_end_to_end_conservation_and_diagnostics) ... ok
+test_source_checksums_and_alignment_preserve_bases (test_public_benchmark.PublicDataTests.test_source_checksums_and_alignment_preserve_bases) ... ok
 test_chapter_example_one (test_sequence.SequenceTests.test_chapter_example_one) ... ok
 test_empty_retry_and_unseparated (test_sequence.SequenceTests.test_empty_retry_and_unseparated) ... ok
 test_fasta (test_sequence.SequenceTests.test_fasta) ... ok
@@ -17,7 +22,7 @@ test_kgem_known_mixture (test_sequence.SequenceTests.test_kgem_known_mixture) ..
 test_sampling_variants_generalized_intersection (test_sequence.SequenceTests.test_sampling_variants_generalized_intersection) ... ok
 
 ----------------------------------------------------------------------
-Ran 14 tests in 0.391s
+Ran 19 tests in 1.342s
 
 OK
 

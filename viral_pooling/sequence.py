@@ -119,7 +119,7 @@ class Pool:
     reads: dict  # observation ID -> aligned sequence; identity survives GI/difference
 
 
-def generalized_intersection(p, q, w=2):
+def generalized_intersection(p, q, w=2, diagnostics=None):
     if w < 1:
         raise ValueError('W >= 1 required')
     shared = p.samples & q.samples
@@ -134,6 +134,9 @@ def generalized_intersection(p, q, w=2):
         return Pool(shared, {})
     keys = sorted(merged)
     fit = kgem([merged[key] for key in keys], w * len(p.samples | q.samples))
+    if diagnostics is not None:
+        diagnostics.append({'w': w, 'requested_k': w * len(p.samples | q.samples),
+                            **{key: fit[key] for key in ('effective_k', 'converged', 'inner_converged')}})
     left = {label for key, label in zip(keys, fit['labels']) if key in p.reads}
     right = {label for key, label in zip(keys, fit['labels']) if key in q.reads}
     keep = left & right
@@ -149,6 +152,7 @@ def deconvolve(pools, w=2, max_w=4):
     if w < 1 or max_w < w:
         raise ValueError('invalid W range')
     expected = set().union(*(p.samples for p in pools)) if pools else set()
+    clustering_trace = []
     for current_w in range(w, max_w + 1):
         queue = [Pool(p.samples, dict(p.reads)) for p in pools]
         result, operations = {}, 0
@@ -162,7 +166,7 @@ def deconvolve(pools, w=2, max_w=4):
                 result.setdefault(sample, {}).update(p.reads)
                 continue
             q = queue.pop(partner)
-            inter = generalized_intersection(p, q, current_w)
+            inter = generalized_intersection(p, q, current_w, clustering_trace)
             queue.append(inter)
             if p.samples - q.samples:
                 queue.append(Pool(p.samples - q.samples, {k: v for k, v in p.reads.items() if k not in inter.reads}))
@@ -172,4 +176,4 @@ def deconvolve(pools, w=2, max_w=4):
         missing = sorted(s for s in expected if not result.get(s))
         if not missing:
             break
-    return result, {'w': current_w if expected else w, 'empty_samples': missing if expected else [], 'operations': operations if expected else 0}
+    return result, {'w': current_w if expected else w, 'empty_samples': missing if expected else [], 'operations': operations if expected else 0, 'clustering_trace': clustering_trace}

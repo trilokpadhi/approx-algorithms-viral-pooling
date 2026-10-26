@@ -1,0 +1,73 @@
+{
+  "record": "https://zenodo.org/records/3266795",
+  "doi": "10.5281/zenodo.3266795",
+  "license": "CC-BY-4.0",
+  "creator": "Kamila Caraballo Cortes",
+  "selection": "First eight chronic genotype 1 files sorted by numeric public sample identifier; chosen before running deconvolution.",
+  "files": [
+    {
+      "sample_id": "53",
+      "original_filename": "53 chronic genotype 1 HCV infection.fasta",
+      "local_filename": "raw/53.fasta",
+      "url": "https://zenodo.org/api/records/3266795/files/53%20chronic%20genotype%201%20HCV%20infection.fasta/content",
+      "md5": "md5:37dba08e31ab6cb1c5fb1c405a6061c6",
+      "sha256": "f2316472d41ee680982ef806c9008ff35313305f1d8912c7bb3b8b79210a4066"
+    },
+    {
+      "sample_id": "80",
+      "original_filename": "80 chronic genotype 1 HCV infection.fasta",
+      "local_filename": "raw/80.fasta",
+      "url": "https://zenodo.org/api/records/3266795/files/80%20chronic%20genotype%201%20HCV%20infection.fasta/content",
+      "md5": "md5:2fa2c2b0756748493a0ce101735e8b3a",
+      "sha256": "d52bb5aa409e172b41490c3f470e371ffe154a2ee3251ef05895354c772759bb"
+    },
+    {
+      "sample_id": "142",
+      "original_filename": "142 chronic genotype 1 HCV infection.fasta",
+      "local_filename": "raw/142.fasta",
+      "url": "https://zenodo.org/api/records/3266795/files/142%20chronic%20genotype%201%20HCV%20infection.fasta/content",
+      "md5": "md5:3fbe07a821f0d0bfd8c126d55fb5db83",
+      "sha256": "75f87f0124ede5c14b752bed7d215f99e5778820de5c23a520f7d9839c390301"
+    },
+    {
+      "sample_id": "153",
+      "original_filename": "153 chronic genotype 1 HCV infection.fasta",
+      "local_filename": "raw/153.fasta",
+      "url": "https://zenodo.org/api/records/3266795/files/153%20chronic%20genotype%201%20HCV%20infection.fasta/content",
+      "md5": "md5:644286ea479d6bdcb72f243b89230132",
+      "sha256": "c98ce57f6f7af4ea5c1c82366c5b13ee2921c92988fb8e0f866bc9e06c025045"
+    },
+    {
+      "sample_id": "157",
+      "original_filename": "157 chronic genotype 1 HCV infection.fasta",
+      "local_filename": "raw/157.fasta",
+      "url": "https://zenodo.org/api/records/3266795/files/157%20chronic%20genotype%201%20HCV%20infection.fasta/content",
+      "md5": "md5:7896dd384805837acd03ba4e9afa091e",
+      "sha256": "b9346ff384953011ff98c232f768814dc80eefc8033334cf9ed72a89603e8d21"
+    },
+    {
+      "sample_id": "165",
+      "original_filename": "165 chronic genotype 1 HCV infection.fasta",
+      "local_filename": "raw/165.fasta",
+      "url": "https://zenodo.org/api/records/3266795/files/165%20chronic%20genotype%201%20HCV%20infection.fasta/content",
+      "md5": "md5:e788221d7da7954cac4d93c367b6fbdf",
+      "sha256": "081a6bdcaf6c2544b6ef40f471dccce15e9b8c4c6dfb66c7c8037bf1c7d9dc6e"
+    },
+    {
+      "sample_id": "200",
+      "original_filename": "200 chronic genotype 1 HCV infection.fasta",
+      "local_filename": "raw/200.fasta",
+      "url": "https://zenodo.org/api/records/3266795/files/200%20chronic%20genotype%201%20HCV%20infection.fasta/content",
+      "md5": "md5:4273f028d12495e84934ea17b1d25f78",
+      "sha256": "ab8a203dd9b7ca0d2442d50d8a5a0dc6cfd80f66ba411164fce5f542c079de19"
+    },
+    {
+      "sample_id": "201",
+      "original_filename": "201 chronic genotype 1 HCV infection.fasta",
+      "local_filename": "raw/201.fasta",
+      "url": "https://zenodo.org/api/records/3266795/files/201%20chronic%20genotype%201%20HCV%20infection.fasta/content",
+      "md5": "md5:6ea232e945ad3dc456b87160ae66131c",
+      "sha256": "4aa66c341854deac4dec066968ff077eae03762cfe63626d073c6718ca9b1451"
+    }
+  ]
+}
