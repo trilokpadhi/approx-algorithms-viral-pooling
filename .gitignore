@@ -5,3 +5,11 @@ __pycache__/
 
 # Local copyrighted reference extraction; not part of published source
 spec/chapter.txt
+
+# LaTeX build intermediates
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz

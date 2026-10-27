@@ -9,7 +9,9 @@ The chapter is the primary algorithm specification. See the source mapping and
 explicit reproduction notes below.
 
 A student progress report covering completed work, results, limitations, and next
-steps is available in [PROGRESS_REPORT.md](PROGRESS_REPORT.md).
+steps is available in [PROGRESS_REPORT.md](PROGRESS_REPORT.md). The
+[Overleaf-ready LaTeX project](report/README.md) and [compiled PDF](report/progress-report.pdf)
+are also included.
 
 ## Public HCV comparison
 
