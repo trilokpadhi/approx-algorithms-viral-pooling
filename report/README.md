@@ -13,11 +13,13 @@ BibTeX run, shell escape, or data downloads are needed.
 - `main.tex`: title, packages, and main document.
 - `content.tex`: editable report text, tables, and references.
 - `neurips_2025.sty`: unmodified official style file.
-- `progress-report.pdf`: compiled, visually checked four-page report.
+- `progress-report.pdf`: compiled, visually checked five-page report.
 
-The ZIP contains the three source files and this README. The report retains the
-Markdown report's student voice, verified results, limitations, and planned work.
-Edit the author field in `main.tex` if you want a name on the report.
+The ZIP contains the three source files and this README. The report focuses on the public HCV dataset, including the methodology,
+algorithm, specimen-level results, limitations, and planned work. It retains
+the Markdown report's student voice.
+The author block lists Trilok Padhi (Panther ID: 02716700) and Mark Grinshpon
+(Panther ID: TBD).
 
 ## Local build
 

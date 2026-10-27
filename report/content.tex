@@ -1,293 +1,382 @@
-\hypertarget{project-objective}{%
-\section{Project objective}\label{project-objective}}
+\hypertarget{project-objective-and-current-progress}{%
+\section{Project objective and current
+progress}\label{project-objective-and-current-progress}}
 
-My goal is to implement the computational approach in the chapter
-\emph{Pooling Strategy for Massive Viral Sequencing} and evaluate it on
-viral sequence data. The main idea is to mix several samples into
-overlapping pools, sequence those pools, and then assign the sequences
-back to their original samples. A successful design should use fewer
-pools while keeping the samples distinguishable.
+My goal is to implement the computational methods in \emph{Pooling
+Strategy for Massive Viral Sequencing} and evaluate sample recovery
+using public HCV HVR1 sequences. The problem is to design overlapping
+pools that identify individual specimens, then assign the sequences
+observed in those pools back to their source specimens.
 
-This project connects to the course because finding the minimum number
-of valid pools is an NP-hard optimization problem. I am implementing the
-chapter's greedy and tabu-search heuristics rather than claiming to find
-an optimal solution for every input.
+I have implemented the compatibility graph, Greedy Pool Design Algorithm
+(GPDA), tabu-search clique-cut selection, kGEM clustering, and
+generalized pool intersections and differences. I have also completed an
+exploratory evaluation using eight public specimens. The implementation
+is a chapter-based reproduction with documented interpretations of the
+printed pseudocode, rather than a claim of exact reproduction of the
+published experiments.
 
-\hypertarget{work-completed}{%
-\section{Work completed}\label{work-completed}}
+\hypertarget{methodology-public-hcv-dataset}{%
+\section{Methodology: public HCV
+dataset}\label{methodology-public-hcv-dataset}}
 
-I have completed an initial Python implementation of the main
-computational stages:
+\hypertarget{data-source-and-specimen-selection}{%
+\subsection{Data source and specimen
+selection}\label{data-source-and-specimen-selection}}
+
+I used the HCV HVR1 sequence deposit associated with Janiak et
+al.~(2019), available on Zenodo under DOI 10.5281/zenodo.3266795 and the
+CC BY 4.0 license. The source contains reconstructed, error-corrected
+haplotypes and estimated frequencies in FASTA headers. These are not raw
+sequencing reads.
+
+Before evaluating recovery, I selected the first eight files labeled
+chronic genotype 1 in numeric specimen-ID order: \textbf{53, 80, 142,
+153, 157, 165, 200, and 201}. The rule is deterministic but does not
+produce a random or representative cohort. The filenames use genotype 1;
+the study describes its genotype-1 cohort as subtype 1b. I did not
+independently re-genotype the sequences.
+
+\begin{longtable}[]{@{}lr@{}}
+\toprule\noalign{}
+Public specimen & Source haplotype records \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+53 & 16 \\
+80 & 70 \\
+142 & 35 \\
+153 & 24 \\
+157 & 20 \\
+165 & 5 \\
+200 & 54 \\
+201 & 114 \\
+\textbf{Total} & \textbf{338} \\
+\end{longtable}
+
+\hypertarget{preparation-and-pooling-protocol}{%
+\subsection{Preparation and pooling
+protocol}\label{preparation-and-pooling-protocol}}
+
+I retained all listed haplotypes without an additional frequency cutoff
+and normalized the header frequency estimates within each specimen. I
+removed the source gap symbols and aligned all sequences together using
+MAFFT 7.526 with \texttt{-\/-auto\ -\/-thread\ 1}. The alignment
+contains 180 columns and 333 distinct strings. Checksums verify the
+downloaded files, and sequence-content checks confirm that alignment did
+not change the ungapped nucleotide strings.
+
+For this evaluation, I assumed all eight specimens were mutually
+compatible. Measured titers and epidemiological exclusions were not
+used. Thus, the experiment tests deconvolution under a complete
+compatibility graph, rather than validating the biological compatibility
+model.
+
+I used a maximum pool size of four and independently sampled 80
+observations per included specimen per pool using the normalized source
+frequencies. Each replicate has 1,040 observations. I ran five
+replicates using seeds 91 through 95. The initial clustering multiplier
+was W=2; deconvolution was repeated from the original pools with
+increased W, up to W=4, if any recovered specimen was empty.
+
+\textbf{The input haplotypes are real public HCV sequences, but pooling
+and read sampling are simulated.} No laboratory pooling, new sequencing,
+or added sequencing-error model was used. Ground-truth source labels
+were withheld from clustering and used only to evaluate assignments.
+Independent observations retain distinct identifiers, even if their
+nucleotide strings are identical.
+
+\hypertarget{algorithm}{%
+\section{Algorithm}\label{algorithm}}
+
+\hypertarget{pool-design-with-gpda-and-tabu-search}{%
+\subsection{Pool design with GPDA and tabu
+search}\label{pool-design-with-gpda-and-tabu-search}}
+
+Let G represent sample compatibility and H represent unresolved sample
+pairs. Initially, H contains every pair of specimens. A candidate pool A
+is valid if it is a clique in G and its size does not exceed the limit
+T=4. It separates a pair when exactly one endpoint belongs to A.
+
+The chapter's clique-cut objective can be written as
+
+\[
+f(A)=c_H(A,V\setminus A)-(|E(H)|+1)q_G(A),
+\]
+
+where c\_H counts unresolved pairs separated by A and q\_G counts
+incompatible pairs inside A. The penalty discourages invalid pools. The
+tabu heuristic searches both orientations of a MaxCut initialization,
+uses the chapter's single-vertex gain formulas to make improving moves,
+and uses undo operations and temporarily forbidden moves to explore
+alternatives. It trims an oversized record to satisfy T. The
+implementation also uses documented iteration limits and a singleton
+fallback.
+
+GPDA adds the selected pool and removes the pairs it separates from H.
+It repeats until H has no edges, then adds an uncovered singleton if
+needed. Finally, it checks that every specimen is covered and has a
+distinct pool-membership signature.
+
+For the public specimens, the resulting design was:
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Pool & Specimens included \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+P1 & 53, 142, 157, 200 \\
+P2 & 53, 80, 157, 165 \\
+P3 & 53, 80, 142, 153 \\
+P4 & 201 \\
+\end{longtable}
+
+This gives four pools for eight specimens. The same design is used
+across the five sampling replicates. GPDA and tabu search are
+heuristics; I do not claim that their output is globally optimal. The
+additional exact clique-cut solver is used only for small-instance
+verification.
+
+\hypertarget{kgem-clustering}{%
+\subsection{kGEM clustering}\label{kgem-clustering}}
+
+For two pools, I set the requested cluster count to k=W times the number
+of specimens in their membership union. If k exceeds the number of
+distinct observed strings, the implementation caps it. The initial
+centroid is the most frequent read, and subsequent seeds maximize their
+minimum Hamming distance to the existing seeds.
+
+For centroid g\_i and aligned read r of length L, the emission
+likelihood is
+
+\[
+h_{i,r}=\prod_{m=1}^{L}f_{i,m}(r_m).
+\]
+
+The consensus allele at a position has probability 1-4 epsilon and each
+of the other four alleles has probability epsilon; the alphabet includes
+a deletion symbol. The current implementation uses epsilon=0.01. Given
+mixture proportions pi\_i, posterior cluster membership is
+
+\[
+p_{i,r}=\frac{\pi_i h_{i,r}}{\sum_j\pi_j h_{j,r}}.
+\]
+
+The inner iteration estimates mixture proportions using observed read
+counts. The outer iteration updates the consensus alleles using the
+chapter's printed posterior sum over distinct read strings. This is a
+discrete consensus update, not a full soft allele-frequency update.
+Likelihoods are computed in logarithmic form for numerical stability.
+The iterations stop when estimates stabilize or a documented iteration
+or cycle limit is reached. Each observation is assigned to its
+highest-posterior cluster.
+
+\hypertarget{generalized-intersections-and-deconvolution}{%
+\subsection{Generalized intersections and
+deconvolution}\label{generalized-intersections-and-deconvolution}}
+
+For pools P and Q, I cluster their combined observations and retain
+clusters that contain reads from both pools. These clusters form the
+generalized intersection. The known pool memberships determine which
+specimens this intersection represents; the nucleotide identities
+determine which reads enter it. Directed differences remove the selected
+observation IDs from the corresponding original pool.
+
+The queue procedure repeatedly replaces a pair of overlapping pools by
+its intersection and nonempty directed differences until individual
+specimen sets remain. Replacing both operands is an explicit
+interpretation of the chapter's queue pseudocode. Increasing W is
+triggered only by an empty recovered specimen; a nonempty but incorrect
+result does not trigger another attempt.
+
+\hypertarget{results-on-the-public-hcv-dataset}{%
+\section{Results on the public HCV
+dataset}\label{results-on-the-public-hcv-dataset}}
+
+Accuracy is the number of correct assignment entries divided by all
+assignment entries. Read recall is the number of correctly recovered
+observation IDs divided by all input observation IDs. Every observation
+was assigned exactly once in these runs, so accuracy and recall
+coincide.
+
+\begin{longtable}[]{@{}lr@{}}
+\toprule\noalign{}
+Measure & Public HCV result \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Specimens & 8 \\
+Source haplotype records & 338 \\
+Alignment columns & 180 \\
+Pools & 4 \\
+Observations per replicate & 1,040 \\
+Mean assignment accuracy and read recall & 71.81\% \\
+Accuracy range across five seeds & 70.48--72.88\% \\
+Mean per-specimen recall (macro average) & 72.97\% \\
+Mean recall excluding the singleton specimen & 69.46\% \\
+\end{longtable}
+
+\hypertarget{replicate-results}{%
+\subsection{Replicate results}\label{replicate-results}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2000}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2667}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2667}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2667}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Component
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Current status
+Sampling seed
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Correct assignments / observations
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Accuracy
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Final W
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Sample compatibility graph & Implemented, with a titer-difference rule
-and optional forbidden pairs \\
-Greedy Pool Design Algorithm (GPDA) & Implemented \\
-Clique-cut selection with tabu search & Implemented \\
-Exact clique-cut solver for small inputs & Added as a verification
-tool \\
-FASTA input and simulated pooling & Implemented \\
-kGEM clustering & Implemented using the chapter's likelihood model and
-consensus update \\
-Generalized pool intersections and differences & Implemented \\
-Synthetic and public HCV comparisons & Completed for the current small
-datasets \\
-Verification tests and reproducible commands & Included in the
-repository \\
+91 & 746 / 1,040 & 71.73\% & 3 \\
+92 & 758 / 1,040 & 72.88\% & 3 \\
+93 & 747 / 1,040 & 71.83\% & 4 \\
+94 & 750 / 1,040 & 72.12\% & 4 \\
+95 & 733 / 1,040 & 70.48\% & 3 \\
 \end{longtable}
 
-The code is organized into separate modules for pool design, sequence
-processing, public-data preparation, and benchmarking. The repository
-also contains input data, source attribution, checksums, saved results,
-and instructions for repeating the experiments.
+The variation here comes from sampling the same underlying specimens
+repeatedly. It does not measure uncertainty across independent cohorts.
+All 48 kGEM fits in the main runs, including retries, reported inner and
+outer convergence. This shows numerical stabilization, not correctness
+of the resulting specimen assignments.
 
-\hypertarget{how-the-implementation-works}{%
-\section{How the implementation
-works}\label{how-the-implementation-works}}
+\hypertarget{specimen-level-recovery}{%
+\subsection{Specimen-level recovery}\label{specimen-level-recovery}}
 
-The compatibility graph represents which samples can be mixed. Each pool
-must be a clique, meaning that every pair of samples inside the pool is
-compatible. The pool-size limit prevents the algorithm from putting too
-many samples together.
-
-GPDA maintains a second graph containing sample pairs that have not yet
-been separated. At each step, it adds a pool that separates some of
-these pairs. A pair is separated when exactly one of its samples belongs
-to the pool. The process continues until every pair has been separated.
-An uncovered sample is placed in a singleton pool if necessary, so every
-sample has a distinct, nonempty pattern of pool memberships.
-
-The tabu-search procedure looks for a useful clique cut at each greedy
-step. It rewards separation of unresolved pairs and penalizes
-incompatible pairs inside a candidate pool. The exact solver provides a
-reference for checking small clique-cut instances; it does not make the
-overall greedy design globally optimal.
-
-For deconvolution, ordinary sequence intersection is not sufficient
-because the same sample can contribute different variants to different
-pools. The implementation uses kGEM to cluster related sequences. A
-generalized intersection keeps clusters with observations from both
-pools. Intersections and differences are then used to separate the
-individual samples.
-
-\hypertarget{data-and-experimental-setup}{%
-\section{Data and experimental
-setup}\label{data-and-experimental-setup}}
-
-I first tested the pipeline with a clearly labeled synthetic dataset
-containing eight artificial samples and four variants per sample. The
-sequences are 306 bases long and were deliberately generated with
-well-separated sample populations.
-
-I then used public HCV HVR1 sequences from the dataset associated with
-Janiak et al. (2019). I selected the first eight chronic genotype-1
-specimen files in numeric identifier order before measuring performance.
-These files contain 338 reconstructed haplotype records. I retained all
-listed variants and normalized the frequency estimates in their FASTA
-headers for sampling. After removing the original gap symbols, I aligned
-the sequences together with MAFFT 7.526. The resulting alignment has 180
-columns.
-
-For both datasets, I used the following comparison settings:
-
-\begin{itemize}
-\tightlist
-\item
-  Eight samples, with at most four samples per pool.
-\item
-  All sample pairs assumed compatible for this controlled comparison.
-\item
-  Eighty observations sampled per included sample per pool.
-\item
-  Five sampling seeds: 91 through 95.
-\item
-  Initial clustering multiplier W=2, with retries up to W=4 when a
-  recovered sample was empty.
-\end{itemize}
-
-The HCV sequences are real, but the pools and read observations are
-simulated. I have not performed an experiment using laboratory-pooled
-specimens. The public benchmark also does not use measured specimen
-titers or epidemiological exclusions.
-
-\hypertarget{results-so-far}{%
-\section{Results so far}\label{results-so-far}}
-
-Both datasets produced four pools for eight samples and 1,040
-observations per run.
+For seed 91, recovery differed substantially between specimens:
 
 \begin{longtable}[]{@{}lrr@{}}
 \toprule\noalign{}
-Measure & Synthetic dataset & Public HCV subset \\
+Public specimen & Correct / true observations & Recall \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Haplotype records & 32 & 338 \\
-Alignment length & 306 & 180 \\
-Mean read-assignment accuracy & 100.00\% & 71.81\% \\
-Accuracy range across five seeds & 100.00--100.00\% & 70.48--72.88\% \\
-Mean recall excluding the singleton specimen & 100.00\% & 69.46\% \\
+53 & 240 / 240 & 100.00\% \\
+80 & 6 / 160 & 3.75\% \\
+142 & 70 / 160 & 43.75\% \\
+153 & 80 / 80 & 100.00\% \\
+157 & 160 / 160 & 100.00\% \\
+165 & 50 / 80 & 62.50\% \\
+200 & 60 / 80 & 75.00\% \\
+201 & 80 / 80 & 100.00\% \\
 \end{longtable}
 
-Every observation received exactly one assignment in these runs.
-Therefore, the lower HCV accuracy reflects incorrect assignments, rather
-than reads being left unassigned. Accuracy here measures agreement with
-the source labels used to simulate the observations.
+Specimen 201 occupies a singleton pool, so its complete recovery does
+not test separation of mixed populations. Excluding that specimen gives
+a more informative additional measure of performance on pooled
+specimens. Specimen 80 remains poorly recovered despite a nonempty
+output, showing why the empty-sample retry rule is not sufficient to
+detect failure.
 
-The average also hides large differences between specimens. For seed 91,
-only 6 of 160 observations from public specimen 80 were correctly
-recovered, giving 3.75\% recall. Several other specimens were recovered
-completely. Specimen 201 was in a singleton pool, making its recovery
-straightforward; this is why I also report recall excluding that
-specimen.
+\hypertarget{sensitivity-to-w}{%
+\subsection{Sensitivity to W}\label{sensitivity-to-w}}
 
-I also checked the effect of W on the public dataset using seed 91 with
-retries disabled:
+I also used seed 91 with retries disabled to examine fixed W values:
 
-\begin{longtable}[]{@{}lrr@{}}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2143}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2857}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2857}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2143}}@{}}
 \toprule\noalign{}
-Fixed W & Assignment accuracy & Empty recovered specimens \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Fixed W
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Correct / total observations
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Accuracy
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Empty recovered specimens
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-1 & 47.98\% & 2 \\
-2 & 68.27\% & 1 \\
-3 & 71.73\% & 0 \\
+1 & 499 / 1,040 & 47.98\% & 80, 157 \\
+2 & 710 / 1,040 & 68.27\% & 80 \\
+3 & 746 / 1,040 & 71.73\% & None \\
 \end{longtable}
 
-These results show that W affects recovery in this experiment. They do
-not establish that increasing W always improves the method. All 48
-clustering fits in the main public-data runs, including retries,
-reported convergence, but convergence alone did not ensure correct
+The results depend on W, but these three runs do not establish that
+increasing W always improves recovery. They are a sensitivity analysis
+on one sampling replicate, not a separate validation set or a
+parameter-optimization study.
+
+\hypertarget{verification-and-limitations}{%
+\section{Verification and
+limitations}\label{verification-and-limitations}}
+
+The saved full test run contains 19 passing tests. Relevant checks
+include pool feasibility and separation, clique-cut gain formulas,
+source-file checksums, frequency parsing, preservation of ungapped
+sequence content, and metric accounting under deliberately incorrect
 assignments.
 
-\hypertarget{verification-and-implementation-differences}{%
-\section{Verification and implementation
-differences}\label{verification-and-implementation-differences}}
-
-The saved test run contains \textbf{19 passing tests}. The tests check
-pool feasibility, sample separation, the chapter's gain equations, small
-exact clique-cut cases, sequence clustering examples, input validation,
-source-file checksums, preservation of sequence content through
-alignment, and assignment-metric accounting.
-
-There are several differences between executable code and the printed
-pseudocode that I have documented rather than treating this as an exact
-reproduction:
+The main limitations of the present evaluation are:
 
 \begin{itemize}
 \tightlist
 \item
-  The tabu procedure handles nonpositive gains and records only feasible
-  cliques. It also has iteration limits and a singleton fallback to
-  ensure progress.
+  The dataset contains reconstructed haplotypes and frequency estimates,
+  not raw reads or experimentally pooled specimens. The simulation does
+  not include PCR bias, contamination, unequal titers, or sequencing
+  errors.
 \item
-  The deconvolution queue replaces both operands with their intersection
-  and differences to avoid repeatedly retaining equivalent pool entries.
+  Only eight chronic genotype-1 specimens from one study were evaluated.
+  All samples were assumed compatible, so the experiment does not test
+  measured biological compatibility restrictions.
 \item
-  The kGEM stopping conditions are interpreted as stopping when
-  estimates stabilize, because the printed conditions appear reversed.
-  Iterations are bounded.
+  One aligned sequence occurs in more than one specimen. Identical
+  strings alone cannot uniquely establish the original source of an
+  observation.
 \item
-  Numerical settings, a cap on the number of distinct initial centroids,
-  and logarithmic likelihood calculations make the implementation
-  executable.
+  Numerical convergence and nonempty recovered sets do not guarantee
+  correct biological assignments. Poor recovery can remain undetected by
+  the retry condition.
+\item
+  The implementation includes documented repairs to stopping conditions,
+  bounded search, and queue refinement. It is not a literal execution of
+  every printed pseudocode line or a reproduction of the chapter's
+  published empirical accuracy.
+\item
+  Four pools instead of eight individually processed specimens
+  demonstrates a reduction in pool count in this setup. It does not
+  establish a 50\% monetary saving, because total sequencing depth and
+  laboratory costs were not held fixed.
 \end{itemize}
-
-The detailed source mapping and explanations are in the main README.
-These tests provide evidence of implementation consistency; they do not
-prove a global approximation guarantee or validate biological accuracy.
-
-\hypertarget{limitations-and-what-i-learned}{%
-\section{Limitations and what I
-learned}\label{limitations-and-what-i-learned}}
-
-The main result so far is that success on the synthetic demo does not
-carry over to the public HCV subset. The current implementation assigns
-some real-sequence populations poorly, even when every recovered sample
-is nonempty.
-
-The synthetic and public datasets differ in sequence length, diversity,
-variant counts, and frequency distributions. I cannot attribute the
-accuracy gap to just one of these factors. The public input consists of
-reconstructed haplotypes rather than raw sequencing reads, and the
-simulation does not include PCR bias, contamination, titer imbalance, or
-sequencing errors. One aligned sequence also occurs in more than one
-public specimen, creating ambiguity in sequence identity.
-
-Only eight specimens from one study have been evaluated. Repeating the
-sampling with five seeds measures variability for those same specimens,
-not performance across independent patient cohorts. Also, four pools
-instead of eight individual samples does not by itself demonstrate a
-50\% reduction in sequencing costs, since the experiment does not hold
-total sequencing depth or laboratory costs fixed.
-
-I have therefore completed an initial implementation and an exploratory
-evaluation, but I have not reproduced the chapter's published
-experimental accuracy.
 
 \hypertarget{next-steps}{%
 \section{Next steps}\label{next-steps}}
 
-My next priority is to understand the incorrect assignments before
-adding more features. I plan to:
+My next priority is to trace the generalized intersections that
+misassign observations from specimens 80 and 142. I plan to inspect the
+saved confusion matrices and clustering diagnostics, then vary W,
+sampling depth, and pool-size limits separately. I also plan to evaluate
+additional public specimens using selection rules set before inspecting
+their results. Any alternative consensus update or queue strategy will
+be identified as a departure from the current chapter-based
+implementation. These are planned investigations, not completed
+improvements.
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Trace the generalized intersections where specimens 80 and 142 lose
-  correctly assigned observations, using the saved confusion matrices
-  and clustering diagnostics.
-\item
-  Test sequence length, W, sampling depth, and pool-size limits
-  separately, keeping the other settings fixed where possible.
-\item
-  Evaluate additional specimens and datasets using selection rules
-  established before inspecting their results.
-\item
-  Review the documented interpretations of the chapter's pseudocode,
-  especially queue refinement and the consensus update, before comparing
-  any alternative versions.
-\end{enumerate}
-
-These are planned experiments, not completed improvements. I will report
-changes in accuracy together with any additional departures from the
-chapter.
-
-\hypertarget{reproducing-the-current-work}{%
-\section{Reproducing the current
-work}\label{reproducing-the-current-work}}
-
-Run these commands from the repository root:
-
-\begin{verbatim}
-python3 -m viral_pooling demo
-python3 -m viral_pooling.benchmark
-python3 -m unittest discover -s tests -v
-\end{verbatim}
-
-The committed public alignment allows the comparison to run without
-downloading data or installing MAFFT. MAFFT is needed only to regenerate
-that alignment.
-
-\hypertarget{references-and-supporting-files}{%
+\hypertarget{references-and-supporting-results}{%
 \section{References and supporting
-files}\label{references-and-supporting-files}}
+results}\label{references-and-supporting-results}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -310,18 +399,12 @@ files}\label{references-and-supporting-files}}
 \begin{itemize}
 \tightlist
 \item
-  \href{https://github.com/trilokpadhi/approx-algorithms-viral-pooling/blob/main/README.md}{Implementation
-  and reproduction notes}
-\item
-  \href{https://github.com/trilokpadhi/approx-algorithms-viral-pooling/blob/main/results/comparison/README.md}{Full
-  comparison report}
-\item
-  \href{https://github.com/trilokpadhi/approx-algorithms-viral-pooling/blob/main/results/comparison/comparison.json}{Machine-readable
-  comparison results}
-\item
   \href{https://github.com/trilokpadhi/approx-algorithms-viral-pooling/blob/main/data/public_hcv/README.md}{Public-data
   provenance and preparation}
 \item
+  \href{https://github.com/trilokpadhi/approx-algorithms-viral-pooling/blob/main/results/public_hcv/report-results.json}{Public
+  HCV results and diagnostics}
+\item
   \href{https://github.com/trilokpadhi/approx-algorithms-viral-pooling/blob/main/results/verification.txt}{Saved
-  test output}
+  full test output}
 \end{itemize}
